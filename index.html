@@ -15,15 +15,16 @@
 
         body {
             font-family: 'Inter', sans-serif;
+            background: #0b0c10;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
-            transition: background 0.3s ease;
-            background: #0b0c10;
+            position: relative;
         }
 
+        /* Efek neon ambient berubah-ubah */
         .micro-card {
             max-width: 600px;
             width: 100%;
@@ -33,11 +34,7 @@
             padding: 2rem 1.75rem;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), 0 0 30px rgba(255, 0, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            transition: box-shadow 0.3s ease, background 0.2s;
-            position: relative;
-        }
-
-        .micro-card.neon-active {
+            transition: box-shadow 0.3s ease;
             animation: neonPulse 4s infinite alternate;
         }
 
@@ -60,6 +57,7 @@
             }
         }
 
+        /* Ikon settings tersembunyi (pojok kanan bawah) */
         .hidden-settings-icon {
             position: absolute;
             bottom: 15px;
@@ -86,6 +84,7 @@
             background: rgba(100, 110, 200, 0.7);
         }
 
+        /* Profile */
         .profile {
             text-align: center;
             margin-bottom: 2rem;
@@ -103,12 +102,6 @@
             overflow: hidden;
             box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.5);
             border: 2px solid rgba(255, 255, 255, 0.25);
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .avatar-fallback {
@@ -140,6 +133,7 @@
             line-height: 1.4;
         }
 
+        /* Daftar link */
         .links-list {
             display: flex;
             flex-direction: column;
@@ -192,6 +186,7 @@
             text-overflow: ellipsis;
         }
 
+        /* Modal styling */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -218,7 +213,7 @@
             background: #181c28;
             border-radius: 2rem;
             width: 90%;
-            max-width: 620px;
+            max-width: 600px;
             max-height: 85vh;
             overflow-y: auto;
             padding: 1.8rem;
@@ -227,14 +222,12 @@
         }
 
         .modal-container h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 600;
             color: #e0e5ff;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             display: flex;
             gap: 10px;
-            border-bottom: 1px solid #2f3450;
-            padding-bottom: 8px;
         }
 
         .form-group {
@@ -250,42 +243,14 @@
         }
 
         .form-group input,
-        .form-group textarea,
-        .form-group select {
+        .form-group textarea {
             width: 100%;
             background: #252a3a;
             border: 1px solid #3f435a;
-            padding: 0.7rem 1rem;
+            padding: 0.8rem 1rem;
             border-radius: 1.2rem;
             color: white;
             font-size: 0.9rem;
-        }
-
-        .bg-preview {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-
-        .bg-sample {
-            width: 60px;
-            height: 40px;
-            border-radius: 12px;
-            border: 1px solid #6c7aff;
-            cursor: pointer;
-            transition: 0.1s;
-        }
-
-        .opacity-slider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .opacity-slider input {
-            flex: 1;
         }
 
         .links-editor {
@@ -300,6 +265,7 @@
             border-radius: 1.2rem;
             padding: 0.8rem;
             margin-bottom: 1rem;
+            transition: 0.1s;
         }
 
         .input-row {
@@ -388,52 +354,31 @@
             font-style: italic;
         }
 
-        hr {
-            border-color: #2f3450;
-            margin: 15px 0;
-        }
-
-        small {
-            color: #aaa;
-            font-size: 0.7rem;
-        }
-
-        .image-preview {
-            margin-top: 8px;
-            padding: 8px;
-            background: #10131c;
-            border-radius: 12px;
+        /* hidden footer */
+        .footer-note {
             display: none;
-        }
-
-        .image-preview img {
-            max-width: 100%;
-            max-height: 100px;
-            border-radius: 8px;
-        }
-
-        .image-preview.active {
-            display: block;
         }
     </style>
 </head>
 <body>
-<div class="micro-card neon-active" id="mainCard">
+<div class="micro-card">
     <div class="hidden-settings-icon" id="hiddenSettingsBtn">
         <i class="fas fa-cog"></i>
     </div>
+
     <div class="profile">
         <div class="avatar" id="avatarContainer"></div>
         <h2 id="profileName">...</h2>
         <div class="bio" id="profileBio"></div>
     </div>
+
     <div class="links-list" id="linksList"></div>
 </div>
 
+<!-- MODAL PENGATURAN (tanpa indikasi password di UI) -->
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-container">
-        <h3><i class="fas fa-sliders-h"></i> Kelola Semua Pengaturan</h3>
-
+        <h3><i class="fas fa-sliders-h"></i> Kelola Tautan & Profil</h3>
         <div class="form-group">
             <label>Nama tampilan</label>
             <input type="text" id="editName">
@@ -443,68 +388,23 @@
             <textarea id="editBio" rows="2"></textarea>
         </div>
         <div class="form-group">
-            <label>URL Avatar (masukkan link gambar persegi)</label>
-            <input type="text" id="editAvatarUrl" placeholder="https://example.com/avatar.jpg">
-            <div id="avatarPreview" class="image-preview"></div>
-            <small>Support: JPG, PNG, GIF, WebP. Kosongkan untuk menggunakan inisial nama.</small>
+            <label>URL Avatar (opsional)</label>
+            <input type="text" id="editAvatarUrl" placeholder="https://...">
         </div>
-
-        <hr>
-
-        <h3 style="font-size:1.2rem;"><i class="fas fa-palette"></i> Background & Gaya</h3>
-        <div class="form-group">
-            <label>Tipe Background</label>
-            <select id="bgType">
-                <option value="default">✨ Default (Neon Gradient + Animasi)</option>
-                <option value="solid">Warna Solid</option>
-                <option value="gradient">Gradient Linear</option>
-                <option value="image">Gambar URL</option>
-            </select>
-        </div>
-        <div class="form-group" id="solidColorGroup" style="display:none;">
-            <label>Warna Solid</label>
-            <input type="color" id="solidColor" value="#0b0c10">
-        </div>
-        <div class="form-group" id="gradientGroup" style="display:none;">
-            <label>Gradient (contoh: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb4d))</label>
-            <input type="text" id="gradientValue" placeholder="linear-gradient(135deg, #0f2027, #203a43, #2c5364)">
-        </div>
-        <div class="form-group" id="imageGroup" style="display:none;">
-            <label>URL Gambar Background</label>
-            <input type="text" id="bgImageUrl" placeholder="https://example.com/background.jpg">
-            <div id="bgImagePreview" class="image-preview"></div>
-            <small>Masukkan URL gambar yang valid. Gambar akan di-stretch menutupi seluruh halaman.</small>
-        </div>
-        <div class="form-group">
-            <label>Transparansi / Opacity Background <span id="opacityValue">100</span>%</label>
-            <div class="opacity-slider">
-                <input type="range" id="bgOpacity" min="0" max="100" value="100" step="1">
-                <span>⬤</span>
-            </div>
-            <small>Atur tingkat transparansi background (0% = transparan penuh)</small>
-        </div>
-        <div class="bg-preview">
-            <div class="bg-sample" id="previewBox" style="background:#0b0c10;"></div>
-            <span style="font-size:12px;">Pratinjau warna/gambar</span>
-        </div>
-
-        <hr>
-
-        <h3 style="font-size:1.2rem;"><i class="fas fa-link"></i> Daftar Tautan (centang Hide untuk menyembunyikan)</h3>
+        <label style="color:#b9c0e5;"><i class="fas fa-link"></i> Daftar Tautan (centang Hide untuk menyembunyikan)</label>
         <div class="links-editor" id="linksEditorContainer"></div>
-        <button class="btn-add-link" id="addLinkBtn"><i class="fas fa-plus-circle"></i> Tambah tautan</button>
-
+        <button class="btn-add-link" id="addLinkBtn"><i class="fas fa-plus-circle"></i> Tambah tautan baru</button>
         <div class="modal-actions">
             <button class="btn-cancel" id="cancelModalBtn">Batal</button>
-            <button class="btn-save" id="saveSettingsBtn">Simpan Semua</button>
+            <button class="btn-save" id="saveSettingsBtn">Simpan Perubahan</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== PASSWORD ADMIN ==========
-    const ADMIN_PASSWORD = "S@l@m1234";
-    
+    // ===================== PASSWORD ADMIN (tersembunyi) =====================
+    const ADMIN_PASSWORD = "S@l@m1234";   // Ganti sesuai keinginan
+
     function verifyPassword() {
         if (sessionStorage.getItem("microweb_admin_verified") === "true") return true;
         const pwd = prompt("🔒 Akses pengaturan:");
@@ -517,264 +417,132 @@
         }
     }
 
-    // ========== DATA STRUKTUR ==========
+    // ------------------ Data default dengan properti hidden ------------------
     const DEFAULT_DATA = {
         profile: {
             name: "Aruna Vierra",
-            bio: "Creative coder • Neon vibe",
+            bio: "Creative coder •  Neen light enthusiast",
             avatarUrl: ""
         },
         links: [
             { text: "Portofolio Kreatif", url: "https://linktr.ee/example", hidden: false },
             { text: "Instagram", url: "https://instagram.com/", hidden: false },
-            { text: "TikTok (contoh hide)", url: "https://tiktok.com/@", hidden: true },
+            { text: "TikTok (disembunyikan contoh)", url: "https://tiktok.com/@", hidden: true },
             { text: "Youtube Channel", url: "https://youtube.com/", hidden: false }
-        ],
-        background: {
-            type: "default",
-            solidColor: "#0b0c10",
-            gradient: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
-            imageUrl: "",
-            opacity: 100
-        }
+        ]
     };
 
-    let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    let appData = {
+        profile: { ...DEFAULT_DATA.profile },
+        links: JSON.parse(JSON.stringify(DEFAULT_DATA.links))
+    };
 
     function loadFromStorage() {
-        const stored = localStorage.getItem("microweb_neon_full");
+        const stored = localStorage.getItem("microweb_neon_data");
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
-                if (parsed.profile && parsed.links && parsed.background) {
+                if (parsed.profile && parsed.links && Array.isArray(parsed.links)) {
                     appData = parsed;
+                    // pastikan setiap link punya properti hidden (default false jika tidak ada)
                     appData.links = appData.links.map(ln => ({
                         text: ln.text || "Tautan",
                         url: ln.url || "#",
-                        hidden: ln.hidden === true
+                        hidden: ln.hidden === true ? true : false
                     }));
-                    if (!appData.background) appData.background = DEFAULT_DATA.background;
-                } else resetToDefault();
+                } else {
+                    resetToDefault();
+                }
             } catch(e) { resetToDefault(); }
-        } else resetToDefault();
+        } else {
+            resetToDefault();
+        }
         if (!appData.links.length) appData.links = [{ text: "Contoh tautan", url: "#", hidden: false }];
     }
 
     function resetToDefault() {
-        appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        appData = {
+            profile: { ...DEFAULT_DATA.profile },
+            links: JSON.parse(JSON.stringify(DEFAULT_DATA.links))
+        };
     }
 
     function saveToStorage() {
-        localStorage.setItem("microweb_neon_full", JSON.stringify(appData));
+        localStorage.setItem("microweb_neon_data", JSON.stringify(appData));
     }
 
-    // ========== FUNGSI AVATAR dengan validasi ==========
-    function loadAvatar() {
+    // render UI publik (hanya link dengan hidden == false)
+    function renderProfile() {
+        document.getElementById("profileName").innerText = appData.profile.name || "Pengguna";
+        document.getElementById("profileBio").innerText = appData.profile.bio || "";
         const avatarContainer = document.getElementById("avatarContainer");
-        const name = appData.profile.name || "Pengguna";
+        const name = appData.profile.name || "U";
         const initial = name.charAt(0).toUpperCase();
         const avatarUrl = appData.profile.avatarUrl;
-
-        if (avatarUrl && avatarUrl.trim() !== "") {
-            // Coba load gambar
-            const img = new Image();
-            img.onload = function() {
-                avatarContainer.innerHTML = `<img src="${avatarUrl}" alt="avatar">`;
-            };
-            img.onerror = function() {
-                console.warn("Gagal load avatar:", avatarUrl);
-                avatarContainer.innerHTML = `<div class="avatar-fallback">${initial}</div>`;
-                // Hapus URL yang rusak dari data
-                if (appData.profile.avatarUrl === avatarUrl) {
-                    appData.profile.avatarUrl = "";
-                    saveToStorage();
-                }
-            };
-            img.src = avatarUrl;
+        if (avatarUrl && avatarUrl.trim()) {
+            avatarContainer.innerHTML = `<img src="${avatarUrl}" alt="avatar" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"avatar-fallback\">${initial}</div>';">`;
         } else {
             avatarContainer.innerHTML = `<div class="avatar-fallback">${initial}</div>`;
         }
     }
 
-    // ========== FUNGSI BACKGROUND dengan validasi ==========
-    function applyBackground() {
-        const body = document.body;
-        const bg = appData.background;
-        const opacity = bg.opacity / 100;
-        const mainCard = document.getElementById("mainCard");
-
-        if (bg.type === "default") {
-            body.style.background = "#0b0c10";
-            body.style.backgroundImage = "none";
-            mainCard.classList.add("neon-active");
-            return;
-        }
-
-        mainCard.classList.remove("neon-active");
-
-        try {
-            if (bg.type === "solid") {
-                const color = bg.solidColor || "#0b0c10";
-                if (opacity < 1) {
-                    // Konversi hex ke rgba
-                    const r = parseInt(color.slice(1,3), 16);
-                    const g = parseInt(color.slice(3,5), 16);
-                    const b = parseInt(color.slice(5,7), 16);
-                    body.style.background = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-                } else {
-                    body.style.background = color;
-                }
-                body.style.backgroundImage = "none";
-            } else if (bg.type === "gradient") {
-                let gradient = bg.gradient || "linear-gradient(135deg, #0f2027, #203a43, #2c5364)";
-                if (opacity < 1) {
-                    // Untuk gradient, kita tambahkan overlay hitam transparan
-                    body.style.background = `${gradient}`;
-                    body.style.backgroundBlendMode = "normal";
-                    // Alternatif: gunakan rgba overlay
-                    body.style.backgroundColor = `rgba(0,0,0,${1-opacity})`;
-                } else {
-                    body.style.background = gradient;
-                    body.style.backgroundColor = "transparent";
-                }
-                body.style.backgroundImage = gradient;
-            } else if (bg.type === "image") {
-                const imgUrl = bg.imageUrl;
-                if (imgUrl && imgUrl.trim() !== "") {
-                    // Test apakah gambar bisa di-load
-                    const testImg = new Image();
-                    testImg.onload = function() {
-                        body.style.background = `url('${imgUrl}') center/cover no-repeat`;
-                        if (opacity < 1) {
-                            body.style.backgroundColor = `rgba(0,0,0,${1-opacity})`;
-                            body.style.backgroundBlendMode = "overlay";
-                        } else {
-                            body.style.backgroundColor = "transparent";
-                            body.style.backgroundBlendMode = "normal";
-                        }
-                    };
-                    testImg.onerror = function() {
-                        console.warn("Gagal load background image:", imgUrl);
-                        body.style.background = "#0b0c10";
-                        // Hapus URL yang rusak
-                        if (appData.background.imageUrl === imgUrl) {
-                            appData.background.imageUrl = "";
-                            appData.background.type = "default";
-                            saveToStorage();
-                            applyBackground();
-                        }
-                    };
-                    testImg.src = imgUrl;
-                } else {
-                    body.style.background = "#0b0c10";
-                }
-            }
-        } catch(e) {
-            console.error("Error apply background:", e);
-            body.style.background = "#0b0c10";
-        }
-    }
-
-    function renderProfile() {
-        document.getElementById("profileName").innerText = appData.profile.name || "Pengguna";
-        document.getElementById("profileBio").innerText = appData.profile.bio || "";
-        loadAvatar();
-    }
-
     function renderLinks() {
         const container = document.getElementById("linksList");
-        const visible = appData.links.filter(l => !l.hidden);
-        if (!visible.length) {
-            container.innerHTML = `<div class="empty-links-message">✨ Tidak ada tautan tampil.</div>`;
+        const visibleLinks = appData.links.filter(link => !link.hidden);
+        if (visibleLinks.length === 0) {
+            container.innerHTML = `<div class="empty-links-message">✨ Tidak ada tautan yang ditampilkan saat ini.</div>`;
             return;
         }
         container.innerHTML = "";
-        visible.forEach(link => {
+        visibleLinks.forEach(link => {
             const a = document.createElement("a");
             a.className = "link-btn";
             a.href = link.url && link.url !== "#" ? link.url : "#";
             a.target = "_blank";
-            const left = document.createElement("div");
-            left.className = "link-left";
-            let icon = "fas fa-link";
-            const t = link.text.toLowerCase();
-            if (t.includes("instagram")) icon = "fab fa-instagram";
-            else if (t.includes("tiktok")) icon = "fab fa-tiktok";
-            else if (t.includes("youtube")) icon = "fab fa-youtube";
-            else if (t.includes("github")) icon = "fab fa-github";
-            else if (t.includes("twitter")) icon = "fab fa-twitter";
-            left.innerHTML = `<i class="${icon}"></i><span class="link-text">${escapeHtml(link.text)}</span>`;
-            a.appendChild(left);
+            const leftDiv = document.createElement("div");
+            leftDiv.className = "link-left";
+            let iconClass = "fas fa-link";
+            const lower = link.text.toLowerCase();
+            if (lower.includes("instagram")) iconClass = "fab fa-instagram";
+            else if (lower.includes("tiktok")) iconClass = "fab fa-tiktok";
+            else if (lower.includes("youtube")) iconClass = "fab fa-youtube";
+            else if (lower.includes("github")) iconClass = "fab fa-github";
+            else if (lower.includes("twitter")) iconClass = "fab fa-twitter";
+            leftDiv.innerHTML = `<i class="${iconClass}"></i><span class="link-text">${escapeHtml(link.text)}</span>`;
+            a.appendChild(leftDiv);
             a.appendChild(document.createElement("i")).className = "fas fa-arrow-right";
             container.appendChild(a);
         });
     }
 
-    function escapeHtml(s) {
-        if (!s) return "";
-        return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 
-    // ========== EDITOR LINKS + HIDE ==========
-    let workingLinks = [];
+    // ---------- MODAL EDITOR dengan opsi HIDE ----------
+    let workingLinks = [];  // salinan sementara untuk edit
 
     function openModal() {
         if (!verifyPassword()) return;
+        // isi form profile
         document.getElementById("editName").value = appData.profile.name || "";
         document.getElementById("editBio").value = appData.profile.bio || "";
         document.getElementById("editAvatarUrl").value = appData.profile.avatarUrl || "";
-        
-        // Preview avatar di modal
-        updateAvatarPreview(appData.profile.avatarUrl);
-        
-        const bg = appData.background;
-        document.getElementById("bgType").value = bg.type;
-        document.getElementById("solidColor").value = bg.solidColor || "#0b0c10";
-        document.getElementById("gradientValue").value = bg.gradient || "";
-        document.getElementById("bgImageUrl").value = bg.imageUrl || "";
-        document.getElementById("bgOpacity").value = bg.opacity;
-        document.getElementById("opacityValue").innerText = bg.opacity;
-        
-        updateBgImagePreview(bg.imageUrl);
-        toggleBgFields(bg.type);
-        
-        workingLinks = appData.links.map(l => ({ ...l }));
+        workingLinks = appData.links.map(ln => ({ ...ln }));
         renderEditorLinks();
         document.getElementById("settingsModal").classList.add("active");
-    }
-
-    function updateAvatarPreview(url) {
-        const previewDiv = document.getElementById("avatarPreview");
-        if (url && url.trim()) {
-            previewDiv.innerHTML = `<img src="${url}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" style="max-width:100%;max-height:80px;border-radius:8px;"><small style="display:none;color:#ff8a8a;">❌ Gagal load gambar</small>`;
-            previewDiv.classList.add("active");
-        } else {
-            previewDiv.classList.remove("active");
-            previewDiv.innerHTML = "";
-        }
-    }
-
-    function updateBgImagePreview(url) {
-        const previewDiv = document.getElementById("bgImagePreview");
-        if (url && url.trim()) {
-            previewDiv.innerHTML = `<img src="${url}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" style="max-width:100%;max-height:80px;border-radius:8px;"><small style="display:none;color:#ff8a8a;">❌ Gagal load gambar</small>`;
-            previewDiv.classList.add("active");
-        } else {
-            previewDiv.classList.remove("active");
-            previewDiv.innerHTML = "";
-        }
-    }
-
-    function toggleBgFields(type) {
-        document.getElementById("solidColorGroup").style.display = type === "solid" ? "flex" : "none";
-        document.getElementById("gradientGroup").style.display = type === "gradient" ? "flex" : "none";
-        document.getElementById("imageGroup").style.display = type === "image" ? "flex" : "none";
     }
 
     function renderEditorLinks() {
         const container = document.getElementById("linksEditorContainer");
         if (!workingLinks.length) {
-            container.innerHTML = `<div class="empty-links-message">Klik tambah tautan</div>`;
+            container.innerHTML = `<div class="empty-links-message">Belum ada tautan. Klik 'Tambah tautan baru'</div>`;
             return;
         }
         container.innerHTML = "";
@@ -783,45 +551,56 @@
             div.className = "link-item-editor";
             div.innerHTML = `
                 <div class="input-row">
-                    <input type="text" placeholder="Label" value="${escapeHtml(link.text)}" class="edit-text" data-idx="${idx}">
-                    <input type="text" placeholder="URL" value="${escapeHtml(link.url)}" class="edit-url" data-idx="${idx}">
+                    <input type="text" placeholder="Label tautan" value="${escapeHtml(link.text)}" class="edit-link-text" data-idx="${idx}">
+                    <input type="text" placeholder="URL lengkap" value="${escapeHtml(link.url)}" class="edit-link-url" data-idx="${idx}">
                 </div>
                 <div class="hide-toggle">
-                    <input type="checkbox" id="hide_${idx}" ${link.hidden ? "checked" : ""} class="hide-chk" data-idx="${idx}">
-                    <label for="hide_${idx}">Sembunyikan tautan</label>
+                    <input type="checkbox" id="hideChk_${idx}" ${link.hidden ? 'checked' : ''} class="hide-checkbox" data-idx="${idx}">
+                    <label for="hideChk_${idx}">Sembunyikan tautan ini (tidak tampil di publik)</label>
                 </div>
-                <button class="btn-remove-link" data-rmidx="${idx}"><i class="fas fa-trash-alt"></i> Hapus</button>
+                <button class="btn-remove-link" data-rmidx="${idx}"><i class="fas fa-trash-alt"></i> Hapus tautan</button>
             `;
             container.appendChild(div);
         });
-        
-        document.querySelectorAll('.edit-text').forEach(inp => {
-            inp.addEventListener('input', e => {
-                let i = parseInt(e.target.dataset.idx);
-                if (workingLinks[i]) workingLinks[i].text = e.target.value;
-            });
+
+        // event listener untuk input text & url
+        document.querySelectorAll('.edit-link-text').forEach(inp => {
+            inp.removeEventListener('input', handleTextChange);
+            inp.addEventListener('input', handleTextChange);
         });
-        document.querySelectorAll('.edit-url').forEach(inp => {
-            inp.addEventListener('input', e => {
-                let i = parseInt(e.target.dataset.idx);
-                if (workingLinks[i]) workingLinks[i].url = e.target.value;
-            });
+        document.querySelectorAll('.edit-link-url').forEach(inp => {
+            inp.removeEventListener('input', handleUrlChange);
+            inp.addEventListener('input', handleUrlChange);
         });
-        document.querySelectorAll('.hide-chk').forEach(chk => {
-            chk.addEventListener('change', e => {
-                let i = parseInt(e.target.dataset.idx);
-                if (workingLinks[i]) workingLinks[i].hidden = e.target.checked;
-            });
+        document.querySelectorAll('.hide-checkbox').forEach(chk => {
+            chk.removeEventListener('change', handleHideToggle);
+            chk.addEventListener('change', handleHideToggle);
         });
         document.querySelectorAll('.btn-remove-link').forEach(btn => {
-            btn.addEventListener('click', e => {
-                let i = parseInt(btn.dataset.rmidx);
-                if (!isNaN(i)) {
-                    workingLinks.splice(i, 1);
-                    renderEditorLinks();
-                }
-            });
+            btn.removeEventListener('click', handleRemoveLink);
+            btn.addEventListener('click', handleRemoveLink);
         });
+    }
+
+    function handleTextChange(e) {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        if (!isNaN(idx) && workingLinks[idx]) workingLinks[idx].text = e.target.value;
+    }
+    function handleUrlChange(e) {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        if (!isNaN(idx) && workingLinks[idx]) workingLinks[idx].url = e.target.value;
+    }
+    function handleHideToggle(e) {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        if (!isNaN(idx) && workingLinks[idx]) workingLinks[idx].hidden = e.target.checked;
+    }
+    function handleRemoveLink(e) {
+        const btn = e.currentTarget;
+        const idx = parseInt(btn.dataset.rmidx, 10);
+        if (!isNaN(idx) && idx >= 0 && idx < workingLinks.length) {
+            workingLinks.splice(idx, 1);
+            renderEditorLinks();
+        }
     }
 
     function addNewLink() {
@@ -829,33 +608,23 @@
         renderEditorLinks();
     }
 
-    function saveAll() {
+    function saveAllChanges() {
+        // simpan profile
         appData.profile.name = document.getElementById("editName").value.trim() || "Pengguna";
         appData.profile.bio = document.getElementById("editBio").value.trim();
-        
-        const newAvatarUrl = document.getElementById("editAvatarUrl").value.trim();
-        appData.profile.avatarUrl = newAvatarUrl;
-        
-        appData.background.type = document.getElementById("bgType").value;
-        appData.background.solidColor = document.getElementById("solidColor").value;
-        appData.background.gradient = document.getElementById("gradientValue").value;
-        appData.background.imageUrl = document.getElementById("bgImageUrl").value.trim();
-        appData.background.opacity = parseInt(document.getElementById("bgOpacity").value, 10);
-        
-        appData.links = workingLinks.filter(l => l.text && l.text.trim()).map(l => ({
-            text: l.text.trim(),
-            url: l.url.trim() || "#",
-            hidden: l.hidden === true
+        appData.profile.avatarUrl = document.getElementById("editAvatarUrl").value.trim();
+        // simpan links, pastikan setiap link memiliki properti hidden
+        appData.links = workingLinks.filter(ln => ln.text && ln.text.trim() !== "").map(ln => ({
+            text: ln.text.trim(),
+            url: ln.url.trim() === "" ? "#" : ln.url.trim(),
+            hidden: ln.hidden === true
         }));
-        
-        if (!appData.links.length) {
-            appData.links = [{ text: "Halaman awal", url: "#", hidden: false }];
+        if (appData.links.length === 0) {
+            appData.links = [{ text: "Landing page", url: "#", hidden: false }];
         }
-        
         saveToStorage();
         renderProfile();
         renderLinks();
-        applyBackground();
         closeModal();
     }
 
@@ -863,39 +632,27 @@
         document.getElementById("settingsModal").classList.remove("active");
     }
 
-    // Event listener untuk preview live
+    // Inisialisasi dan event
     document.addEventListener("DOMContentLoaded", () => {
         loadFromStorage();
         renderProfile();
         renderLinks();
-        applyBackground();
-        
-        // Live preview avatar saat input berubah
-        const avatarInput = document.getElementById("editAvatarUrl");
-        avatarInput.addEventListener("input", (e) => {
-            updateAvatarPreview(e.target.value);
+
+        const hiddenBtn = document.getElementById("hiddenSettingsBtn");
+        const cancelBtn = document.getElementById("cancelModalBtn");
+        const saveBtn = document.getElementById("saveSettingsBtn");
+        const addBtn = document.getElementById("addLinkBtn");
+
+        hiddenBtn.addEventListener("click", openModal);
+        cancelBtn.addEventListener("click", closeModal);
+        saveBtn.addEventListener("click", saveAllChanges);
+        addBtn.addEventListener("click", addNewLink);
+
+        // klik overlay menutup
+        const modal = document.getElementById("settingsModal");
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal();
         });
-        
-        const bgImageInput = document.getElementById("bgImageUrl");
-        bgImageInput.addEventListener("input", (e) => {
-            updateBgImagePreview(e.target.value);
-        });
-        
-        const opacitySlider = document.getElementById("bgOpacity");
-        opacitySlider.addEventListener("input", (e) => {
-            document.getElementById("opacityValue").innerText = e.target.value;
-        });
-        
-        document.getElementById("hiddenSettingsBtn").addEventListener("click", openModal);
-        document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
-        document.getElementById("saveSettingsBtn").addEventListener("click", saveAll);
-        document.getElementById("addLinkBtn").addEventListener("click", addNewLink);
-        document.getElementById("settingsModal").addEventListener("click", (e) => {
-            if (e.target === document.getElementById("settingsModal")) closeModal();
-        });
-        
-        const bgTypeSelect = document.getElementById("bgType");
-        bgTypeSelect.addEventListener("change", (e) => toggleBgFields(e.target.value));
     });
 </script>
 </body>

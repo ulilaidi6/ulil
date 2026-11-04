@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Variabel hue yang bisa dianimasikan (0-360) untuk efek RGB */
+        @property --hue {
+            syntax: '<number>';
+            inherits: true;
+            initial-value: 0;
+        }
+
+        /* Sudut putaran garis RGB (searah jarum jam) */
+        @property --angle {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -21,6 +35,26 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+            animation: hueShift 8s linear infinite;
+        }
+
+        /* Background gambar dari link, digelapkan 80% (warna RGB tidak bocor ke sini) */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                var(--bg-image, none) center / cover no-repeat,
+                #0b0c10;
+        }
+
+        @keyframes hueShift {
+            from { --hue: 0; }
+            to   { --hue: 360; }
         }
 
         .micro-card {
@@ -28,30 +62,33 @@
             width: 100%;
             background: rgba(18, 20, 28, 0.85);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: 2.5rem;
             padding: 2rem 1.75rem;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), 0 0 30px rgba(255, 0, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            animation: neonPulse 4s infinite alternate;
+            position: relative;
         }
 
-        @keyframes neonPulse {
-            0% {
-                box-shadow: 0 0 8px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
-                border-color: rgba(0, 255, 255, 0.4);
-            }
-            33% {
-                box-shadow: 0 0 15px rgba(255, 0, 255, 0.6), 0 0 30px rgba(255, 0, 255, 0.3);
-                border-color: rgba(255, 0, 255, 0.6);
-            }
-            66% {
-                box-shadow: 0 0 12px rgba(255, 255, 0, 0.5), 0 0 25px rgba(255, 255, 0, 0.3);
-                border-color: rgba(255, 255, 0, 0.5);
-            }
-            100% {
-                box-shadow: 0 0 18px rgba(0, 255, 128, 0.6), 0 0 35px rgba(0, 255, 128, 0.3);
-                border-color: rgba(0, 255, 128, 0.6);
-            }
+        /* Garis tepi RGB tebal, warnanya berjalan berurutan searah jarum jam */
+        .micro-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 4px; /* ketebalan garis */
+            background: conic-gradient(
+                from var(--angle),
+                #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: spinBorder 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes spinBorder {
+            to { --angle: 360deg; }
         }
 
         .profile {
@@ -59,19 +96,16 @@
             margin-bottom: 2rem;
         }
 
-        /* --- Kunci utama agar avatar selalu simetris dan bulat --- */
         .avatar {
             width: 96px;
             height: 96px;
             margin: 0 auto 1rem;
             border-radius: 50%;
             overflow: hidden;
-            box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 18px hsl(var(--hue) 100% 55% / 0.5);
+            border: 2px solid hsl(var(--hue) 100% 70% / 0.8);
             background: #2c2e3a;
-            /* Memastikan wadah berbentuk persegi sempurna */
             aspect-ratio: 1 / 1;
-            /* Mencegah distorsi akibat line-height atau font */
             line-height: 0;
         }
 
@@ -91,8 +125,8 @@
         .avatar img {
             width: 100%;
             height: 100%;
-            object-fit: cover;      /* Gambar memenuhi area tanpa merusak rasio */
-            object-position: center; /* Pusatkan gambar */
+            object-fit: cover;
+            object-position: center;
             display: block;
         }
 
@@ -125,6 +159,7 @@
             justify-content: space-between;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             border-radius: 60px;
             padding: 1rem 1.5rem;
             text-decoration: none;
@@ -136,8 +171,9 @@
         }
 
         .link-btn:hover {
-            background: rgba(93, 99, 162, 0.5);
-            border-color: rgba(120, 130, 255, 0.7);
+            background: hsl(var(--hue) 70% 45% / 0.35);
+            border-color: hsl(var(--hue) 100% 65% / 0.8);
+            box-shadow: 0 0 16px hsl(var(--hue) 100% 55% / 0.45);
             transform: translateY(-2px);
             color: white;
         }
@@ -153,7 +189,7 @@
             font-size: 1.3rem;
             width: 28px;
             text-align: center;
-            color: #b9c0ff;
+            color: hsl(var(--hue) 100% 78%);
         }
 
         .link-text {
@@ -169,6 +205,11 @@
             text-align: center;
             padding: 1rem;
             font-style: italic;
+        }
+
+        /* Hormati pengguna yang mematikan animasi */
+        @media (prefers-reduced-motion: reduce) {
+            body, .micro-card::before { animation: none; }
         }
     </style>
 </head>
@@ -189,8 +230,9 @@
     const profile = {
         name: "Ulil Aidi",
         bio: "MAN 2 Grobogan",
-        // Gunakan URL gambar yang sudah dipastikan bisa diakses publik
-        avatarUrl: "https://i.ibb.co.com/bMyTGvND/25539232-MUHAMAD-ULIL-AIDI-Foto.png"
+        avatarUrl: "https://i.ibb.co.com/bMyTGvND/25539232-MUHAMAD-ULIL-AIDI-Foto.png",
+        // Isi dengan link gambar untuk background (otomatis digelapkan 80%). Kosongkan untuk polos gelap.
+        backgroundUrl: "https://i.ibb.co.com/Vct8rMYV/IMG-20230219-080006-149.webp"
     };
 
     const links = [
@@ -213,14 +255,20 @@
     ];
     // ============================================================
 
+    function renderBackground() {
+        if (profile.backgroundUrl && profile.backgroundUrl.trim()) {
+            const safe = profile.backgroundUrl.trim().replace(/"/g, "%22");
+            document.body.style.setProperty("--bg-image", `url("${safe}")`);
+        }
+    }
+
     function renderProfile() {
         document.getElementById("profileName").innerText = profile.name || "Pengguna";
         document.getElementById("profileBio").innerText = profile.bio || "";
         const avatarContainer = document.getElementById("avatarContainer");
         const initial = (profile.name ? profile.name.charAt(0).toUpperCase() : "U");
         if (profile.avatarUrl && profile.avatarUrl.trim()) {
-            // Coba muat gambar; jika gagal, fallback ke inisial
-            avatarContainer.innerHTML = `<img src="${profile.avatarUrl}" alt="avatar" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"avatar-fallback\">${initial}</div>';">`;
+            avatarContainer.innerHTML = `<img src="${profile.avatarUrl}" alt="avatar" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'avatar-fallback\\'>${initial}</div>';">`;
         } else {
             avatarContainer.innerHTML = `<div class="avatar-fallback">${initial}</div>`;
         }
@@ -239,6 +287,7 @@
             a.className = "link-btn";
             a.href = link.url && link.url !== "#" ? link.url : "#";
             a.target = "_blank";
+            a.rel = "noopener noreferrer";
             const leftDiv = document.createElement("div");
             leftDiv.className = "link-left";
             let iconClass = "fas fa-link";
@@ -265,6 +314,7 @@
         });
     }
 
+    renderBackground();
     renderProfile();
     renderLinks();
 </script>
